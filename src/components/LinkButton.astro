@@ -7,9 +7,6 @@ interface Props {
 }
 
 const { link } = Astro.props;
-const externalAttrs = link.external
-  ? { target: "_blank", rel: "noopener noreferrer" }
-  : {};
 ---
 
 <a
@@ -21,7 +18,9 @@ const externalAttrs = link.external
     "hover:-translate-y-0.5 hover:border-[var(--color-accent)] hover:bg-white hover:shadow-[0_10px_28px_rgb(12_18_34_/_0.08)]",
     "active:translate-y-0",
   ]}
-  {...externalAttrs}
+  target={link.external ? "_blank" : undefined}
+  rel={link.external ? "noopener noreferrer" : undefined}
+  referrerpolicy={link.external ? "no-referrer" : undefined}
 >
   <span
     class="flex size-9 items-center justify-center rounded-lg bg-[var(--color-surface)] text-[var(--color-accent)] transition group-hover:bg-[var(--color-accent)] group-hover:text-white"

@@ -7,12 +7,12 @@ Sitio estático tipo “link in bio”: muestra tu perfil y enlaces a redes o co
 - [Astro](https://astro.build) (HTML estático)
 - TypeScript estricto
 - Tailwind CSS v4
-- Fuentes autoalojadas (`@fontsource-variable`)
+- Fuentes autoalojadas (`@fontsource-variable`, subsets latin / latin-ext)
 - Pensado para [Cloudflare Pages](https://pages.cloudflare.com)
 
 ## Requisitos
 
-- Node.js `>= 22.12.0`
+- Node.js `>= 22.12.0` (ver [`.node-version`](.node-version))
 
 ## Desarrollo
 
@@ -24,8 +24,11 @@ npm run dev
 Otros comandos:
 
 ```bash
+npm run check    # astro check (tipos)
 npm run build    # genera dist/
 npm run preview  # sirve dist/ en local
+npm run ci       # check + build
+npm run audit    # npm audit (omitiendo dev)
 ```
 
 ## Personalizar contenido
@@ -33,32 +36,33 @@ npm run preview  # sirve dist/ en local
 Edita un solo archivo: [`src/data/links.ts`](src/data/links.ts).
 
 1. Cambia `profile` (`name`, `bio`, `avatar`, `email`, `siteUrl`).
-2. Ajusta el array `links` (etiqueta, URL, icono, `external`).
-3. Sustituye `public/avatar.webp`, `public/og-image.png` y `public/favicon.svg` por tus assets.
-4. Vuelve a desplegar (o deja que Cloudflare Pages reconstruya al hacer push).
+2. Ajusta el array `links` (etiqueta, URL, icono). `external` se deriva del esquema de la URL.
+3. Mantén `profile.siteUrl` **igual** que `site` en [`astro.config.mjs`](astro.config.mjs) (canónico para SEO/OG).
+4. Sustituye `public/avatar.webp`, `public/og-image.png` y `public/favicon.svg` por tus assets.
+5. Actualiza la URL del sitemap en [`public/robots.txt`](public/robots.txt).
+6. Vuelve a desplegar (o deja que Cloudflare Pages reconstruya al hacer push).
 
-Esquemas de URL permitidos: `https:`, `mailto:`, `tel:`. Cualquier otro esquema falla en build/arranque.
+Esquemas de URL permitidos: `https:`, `mailto:`, `tel:`. Avatar debe ser ruta misma-origen (`/…`). Cualquier incumplimiento falla en build/arranque.
 
 ## Seguridad
 
 - Sitio 100 % estático (superficie mínima).
-- Cabeceras en [`public/_headers`](public/_headers) (CSP, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options`).
-- Enlaces externos con `rel="noopener noreferrer"`.
+- **CSP** con hashes vía `security.csp` en Astro (meta). **No** duplicar `Content-Security-Policy` en `_headers` (doble política = más restrictiva y fácil de romper).
+- Cabeceras en [`public/_headers`](public/_headers): `nosniff`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options`, COOP/CORP y caché (`/_astro/*` inmutable).
+- Enlaces externos: `rel="noopener noreferrer"` + `referrerpolicy="no-referrer"`.
 - Iconos SVG inline (sin CDN de terceros).
 - Sin analytics ni formularios en v1.
+- CI en GitHub Actions: `check`, `build` y `npm audit` (nivel high+).
 
 ## Deploy en Cloudflare Pages
 
-1. Sube el repo a GitHub/GitLab.
-2. En Cloudflare Pages: **Create project** → conecta el repo.
-3. Build settings:
+1. Conecta el repo en Cloudflare Pages.
+2. Build settings:
    - **Build command:** `npm run build`
    - **Build output directory:** `dist`
-   - **Node version:** `22` (o superior)
-4. En `src/data/links.ts`, pon `profile.siteUrl` con tu dominio final (sin barra final).
-5. Añade el dominio personalizado en Cloudflare y espera el SSL.
-
-Las cabeceras de `_headers` se aplican automáticamente en Pages.
+   - **Node version:** lee `.node-version` (22)
+3. Pon el dominio final en `astro.config.mjs` (`site`) y en `profile.siteUrl` / `robots.txt`.
+4. Añade el dominio personalizado en Cloudflare (SSL/HSTS en el edge).
 
 ## Estructura
 
@@ -70,8 +74,10 @@ src/
   pages/index.astro
   styles/global.css
 public/
-  _headers               # seguridad (Cloudflare Pages)
+  _headers               # cabeceras (sin CSP duplicada)
+  robots.txt
   avatar.webp
   og-image.png
   favicon.svg
+.github/workflows/ci.yml
 ```
