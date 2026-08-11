@@ -97,7 +97,7 @@ function defineLink(
 }
 
 export const profile: Profile = {
-  name: "Tu Nombre",
+  name: "Juanfu224",
   bio: "Desarrollador y creador. Encuentra mis redes o escríbeme directamente.",
   avatar: "/avatar.webp",
   email: "hola@tunombre.dev",
@@ -115,26 +115,20 @@ export const links: SocialLink[] = [
   defineLink({
     id: "instagram",
     label: "Instagram",
-    url: "https://instagram.com/tunombre",
+    url: "https://www.instagram.com/juanfu224/",
     icon: "instagram",
   }),
   defineLink({
     id: "linkedin",
     label: "LinkedIn",
-    url: "https://linkedin.com/in/tunombre",
+    url: "https://www.linkedin.com/in/juan-felipe-arias-aguirre/",
     icon: "linkedin",
   }),
   defineLink({
     id: "github",
     label: "GitHub",
-    url: "https://github.com/tunombre",
+    url: "https://github.com/Juanfu224",
     icon: "github",
-  }),
-  defineLink({
-    id: "x",
-    label: "X",
-    url: "https://x.com/tunombre",
-    icon: "x",
   }),
   defineLink({
     id: "youtube",
@@ -151,7 +145,7 @@ export const links: SocialLink[] = [
   defineLink({
     id: "mail",
     label: "Email",
-    url: "mailto:hola@tunombre.dev",
+    url: "mailto:juanfu224@gmail.com",
     icon: "mail",
   }),
 ];
