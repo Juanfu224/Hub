@@ -126,8 +126,8 @@
 }
 
 .lt-avatar {
-  width: 72px;
-  height: 72px;
+  width: 112px;
+  height: 112px;
   border-radius: 50%;
   object-fit: cover;
   display: block;

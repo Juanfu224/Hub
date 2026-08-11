@@ -109,7 +109,7 @@ function defineLink(
 
 export const profile: Profile = {
   name: "Juanfu224",
-  bio: "Desarrollador y creador. Encuentra mis redes o escríbeme directamente.",
+  bio: "Software developer full stack and cats enthusiast😸☕",
   avatar: "/avatar.webp",
   email: "juanfu224@gmail.com",
   /** Keep in sync with `site` in astro.config.mjs and public/robots.txt. */
