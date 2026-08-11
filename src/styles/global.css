@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/figtree";
+
+@theme {
+  --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", sans-serif;
+  --font-sans: "Figtree Variable", "Figtree", sans-serif;
+
+  --color-ink: #0c1222;
+  --color-ink-muted: #3d4a63;
+  --color-surface: #f3f6fa;
+  --color-accent: #0f766e;
+  --color-accent-hover: #0d9488;
+  --color-line: #c5d0de;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background-color: var(--color-surface);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+}
+
+/* Soft atmosphere: cool mist gradient + faint grid (no flat fill). */
+.page-atmosphere {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% -10%, rgb(148 197 210 / 0.45), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 100% 100%, rgb(15 118 110 / 0.12), transparent 50%),
+    radial-gradient(ellipse 50% 40% at 0% 80%, rgb(59 130 246 / 0.08), transparent 45%),
+    linear-gradient(165deg, #e8eef4 0%, #f5f7fa 48%, #eef2f6 100%);
+}
+
+.page-atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.35;
+  background-image:
+    linear-gradient(rgb(12 18 34 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(12 18 34 / 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black, transparent);
+  pointer-events: none;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-rise-delay-1 {
+  animation-delay: 0.08s;
+}
+
+.animate-rise-delay-2 {
+  animation-delay: 0.16s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-rise-delay-1,
+  .animate-rise-delay-2 {
+    animation: none;
+  }
+}

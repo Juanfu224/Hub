@@ -1,0 +1,19 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Profile from "../components/Profile.astro";
+import LinkList from "../components/LinkList.astro";
+---
+
+<BaseLayout>
+  <div class="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 py-12 sm:py-16">
+    <main class="flex flex-1 flex-col items-center gap-10">
+      <Profile />
+      <LinkList />
+    </main>
+    <footer
+      class="animate-rise animate-rise-delay-2 mt-12 text-center text-sm text-[var(--color-ink-muted)]"
+    >
+      <p class="m-0">Hecho a medida · Enlaces directos, sin trackers</p>
+    </footer>
+  </div>
+</BaseLayout>

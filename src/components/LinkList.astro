@@ -1,0 +1,16 @@
+---
+import { links } from "../data/links";
+import LinkButton from "./LinkButton.astro";
+---
+
+<nav aria-label="Redes y contacto" class="animate-rise animate-rise-delay-1 w-full">
+  <ul class="m-0 flex list-none flex-col gap-3 p-0">
+    {
+      links.map((link) => (
+        <li>
+          <LinkButton link={link} />
+        </li>
+      ))
+    }
+  </ul>
+</nav>
