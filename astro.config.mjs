@@ -4,8 +4,8 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  // Replace with your real `*.pages.dev` URL after the first Cloudflare Pages deploy.
-  site: 'https://hub.pages.dev',
+  // Keep in sync with profile.siteUrl and public/robots.txt.
+  site: 'https://hub.juanfu224.workers.dev',
   integrations: [sitemap()],
   markdown: {
     // Avoid Shiki inline styles that conflict with CSP (no MD pages in this site).

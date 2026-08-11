@@ -12,7 +12,8 @@
     "astro": "astro",
     "check": "astro check",
     "audit": "npm audit --omit=dev",
-    "ci": "npm run check && npm run build"
+    "ci": "npm run check && npm run build",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "wrangler": "^4.120.1"
   }
 }

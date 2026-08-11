@@ -112,8 +112,8 @@ export const profile: Profile = {
   bio: "Desarrollador y creador. Encuentra mis redes o escríbeme directamente.",
   avatar: "/avatar.webp",
   email: "juanfu224@gmail.com",
-  /** Replace with your real `*.pages.dev` URL after the first Cloudflare Pages deploy. */
-  siteUrl: "https://hub.pages.dev",
+  /** Keep in sync with `site` in astro.config.mjs and public/robots.txt. */
+  siteUrl: "https://hub.juanfu224.workers.dev",
 };
 
 assertHttpsOrigin(profile.siteUrl, "profile.siteUrl");
