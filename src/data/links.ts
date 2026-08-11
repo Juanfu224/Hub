@@ -5,11 +5,9 @@ export type LinkIcon =
   | "instagram"
   | "linkedin"
   | "github"
-  | "x"
-  | "youtube"
-  | "whatsapp"
-  | "mail"
-  | "web";
+  | "telegram"
+  | "spotify"
+  | "mail";
 
 export interface Profile {
   name: string;
@@ -21,6 +19,7 @@ export interface Profile {
   /**
    * Absolute site origin (https, no trailing slash).
    * Keep in sync with `site` in astro.config.mjs — layout prefers Astro.site.
+   * Until a custom domain exists, use the Cloudflare Pages `*.pages.dev` URL.
    */
   siteUrl: string;
 }
@@ -32,6 +31,18 @@ export interface SocialLink {
   icon: LinkIcon;
   /** Derived from URL scheme: https → true; mailto/tel → false. */
   external: boolean;
+}
+
+/** Which links appear in the social row vs torn cards (and card order). */
+export const presentation = {
+  socialIds: ["mail", "telegram", "linkedin"] as const,
+  cardPriority: ["github"] as const,
+  cardExcluded: ["mail", "linkedin", "telegram"] as const,
+};
+
+/** CSS class for CSP-safe mask icons defined in `global.css`. */
+export function iconClass(icon: LinkIcon): string {
+  return `icon--${icon}`;
 }
 
 function assertSafeUrl(url: string, context: string): URL {
@@ -100,8 +111,9 @@ export const profile: Profile = {
   name: "Juanfu224",
   bio: "Desarrollador y creador. Encuentra mis redes o escríbeme directamente.",
   avatar: "/avatar.webp",
-  email: "hola@tunombre.dev",
-  siteUrl: "https://tunombre.dev",
+  email: "juanfu224@gmail.com",
+  /** Replace with your real `*.pages.dev` URL after the first Cloudflare Pages deploy. */
+  siteUrl: "https://hub.pages.dev",
 };
 
 assertHttpsOrigin(profile.siteUrl, "profile.siteUrl");
@@ -119,6 +131,12 @@ export const links: SocialLink[] = [
     icon: "instagram",
   }),
   defineLink({
+    id: "spotify",
+    label: "Spotify",
+    url: "https://open.spotify.com/user/31qd34klahkpv4qlae4qv654fcwi",
+    icon: "spotify",
+  }),
+  defineLink({
     id: "linkedin",
     label: "LinkedIn",
     url: "https://www.linkedin.com/in/juan-felipe-arias-aguirre/",
@@ -131,16 +149,10 @@ export const links: SocialLink[] = [
     icon: "github",
   }),
   defineLink({
-    id: "youtube",
-    label: "YouTube",
-    url: "https://youtube.com/@tunombre",
-    icon: "youtube",
-  }),
-  defineLink({
-    id: "whatsapp",
-    label: "WhatsApp",
-    url: "https://wa.me/34600000000",
-    icon: "whatsapp",
+    id: "telegram",
+    label: "Telegram",
+    url: "https://t.me/juanfu224",
+    icon: "telegram",
   }),
   defineLink({
     id: "mail",
@@ -149,3 +161,23 @@ export const links: SocialLink[] = [
     icon: "mail",
   }),
 ];
+
+export function getCardLinks(): SocialLink[] {
+  const excluded = new Set<string>(presentation.cardExcluded);
+  const priority = presentation.cardPriority as readonly string[];
+
+  return [
+    ...priority
+      .map((id) => links.find((link) => link.id === id))
+      .filter((link): link is SocialLink => Boolean(link)),
+    ...links.filter(
+      (link) => !excluded.has(link.id) && !priority.includes(link.id),
+    ),
+  ];
+}
+
+export function getSocialLinks(): SocialLink[] {
+  return presentation.socialIds
+    .map((id) => links.find((link) => link.id === id))
+    .filter((link): link is SocialLink => Boolean(link));
+}

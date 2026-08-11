@@ -1,11 +1,11 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://tunombre.dev',
+  // Replace with your real `*.pages.dev` URL after the first Cloudflare Pages deploy.
+  site: 'https://hub.pages.dev',
   integrations: [sitemap()],
   markdown: {
     // Avoid Shiki inline styles that conflict with CSP (no MD pages in this site).
@@ -24,8 +24,5 @@ export default defineConfig({
         'upgrade-insecure-requests',
       ],
     },
-  },
-  vite: {
-    plugins: [tailwindcss()],
   },
 });

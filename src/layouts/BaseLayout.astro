@@ -20,10 +20,11 @@ const ogImage = `${siteOrigin}/og-image.png`;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#0f766e" />
+    <meta name="theme-color" content="#0a0a0a" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="preload" as="image" href="/bg-poster.webp" type="image/webp" fetchpriority="high" />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_ES" />
@@ -40,7 +41,7 @@ const ogImage = `${siteOrigin}/og-image.png`;
 
     <title>{title}</title>
   </head>
-  <body class="page-atmosphere">
+  <body class="lt-page">
     <slot />
   </body>
 </html>

@@ -3,6 +3,9 @@ dist/
 # generated types
 .astro/
 
+# local scratch / scraped assets
+.tmp-linktree-assets/
+
 # dependencies
 node_modules/
 

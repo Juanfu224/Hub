@@ -1,0 +1,23 @@
+---
+import type { SocialLink } from "../data/links";
+import { iconClass } from "../data/links";
+
+interface Props {
+  link: SocialLink;
+}
+
+const { link } = Astro.props;
+---
+
+<a
+  href={link.url}
+  class="lt-torn-btn"
+  target={link.external ? "_blank" : undefined}
+  rel={link.external ? "noopener noreferrer" : undefined}
+  referrerpolicy={link.external ? "no-referrer" : undefined}
+>
+  <span class="lt-torn-icon-wrap" aria-hidden="true">
+    <span class:list={["lt-torn-icon", iconClass(link.icon)]}></span>
+  </span>
+  <span class="lt-torn-label">{link.label}</span>
+</a>

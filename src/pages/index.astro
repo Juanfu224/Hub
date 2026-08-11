@@ -1,19 +1,33 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Profile from "../components/Profile.astro";
-import LinkList from "../components/LinkList.astro";
+import SocialRow from "../components/SocialRow.astro";
+import TornLink from "../components/TornLink.astro";
+import { getCardLinks, profile } from "../data/links";
+
+const cardLinks = getCardLinks();
+const title = `${profile.name} — Enlaces y contacto`;
 ---
 
-<BaseLayout>
-  <div class="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 py-12 sm:py-16">
-    <main class="flex flex-1 flex-col items-center gap-10">
+<BaseLayout title={title}>
+  <div class="lt-shell">
+    <main class="lt-main">
       <Profile />
-      <LinkList />
+      <SocialRow />
+      <nav aria-label="Enlaces" class="lt-nav">
+        <ul class="lt-links">
+          {
+            cardLinks.map((link) => (
+              <li>
+                <TornLink link={link} />
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
     </main>
-    <footer
-      class="animate-rise animate-rise-delay-2 mt-12 text-center text-sm text-[var(--color-ink-muted)]"
-    >
-      <p class="m-0">Hecho a medida · Enlaces directos, sin trackers</p>
+    <footer class="lt-footer">
+      <p>Enlaces directos, sin trackers</p>
     </footer>
   </div>
 </BaseLayout>
