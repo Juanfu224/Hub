@@ -54,34 +54,48 @@ Esquemas de URL permitidos: `https:`, `mailto:`, `tel:`. Avatar debe ser ruta mi
 - Enlaces externos: `rel="noopener noreferrer"` + `referrerpolicy="no-referrer"`.
 - Iconos SVG vía máscaras CSS en clases estáticas (sin estilos inline ni CDN).
 - Sin analytics ni formularios en v1.
-- CI en GitHub Actions: `check`, `build` y `npm audit` (nivel high+).
+- CI en GitHub Actions: `check`, `build`, `npm audit` (nivel high+) y **deploy automático** a Workers en cada push a `main`.
 
 ## Deploy en Cloudflare Workers (sin dominio propio)
 
-El sitio se publica como Worker **assets-only** ([`wrangler.jsonc`](wrangler.jsonc)). Cloudflare asigna una URL `https://hub.<subdominio>.workers.dev`.
+El sitio se publica como Worker **assets-only** ([`wrangler.jsonc`](wrangler.jsonc)). URL de producción: `https://hub.juanfu224.workers.dev`.
 
-### Desde tu máquina (cuenta permanente)
+### Producción (recomendado): GitHub Actions
+
+Cada push a `main` (y `workflow_dispatch`) despliega con [`cloudflare/wrangler-action`](https://github.com/cloudflare/wrangler-action) tras pasar `check`/`build`/`audit`.
+
+Secrets del repo (Settings → Secrets and variables → Actions):
+
+| Secret | Valor |
+|--------|--------|
+| `CLOUDFLARE_API_TOKEN` | Token API con permiso **Edit Cloudflare Workers** (+ Account Read) |
+| `CLOUDFLARE_ACCOUNT_ID` | ID de cuenta Cloudflare |
+
+Crear el token: [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens) → plantilla **Edit Cloudflare Workers**.
+
+Para redesplegar sin commit: Actions → **CI** → **Run workflow**.
+
+### Desde tu máquina (manual)
 
 1. Autentica Wrangler una vez: `npx wrangler login`
-2. Despliega: `npm run deploy`
-3. Copia la URL `*.workers.dev` y actualízala en los tres sitios:
+2. Despliega: `npm run deploy` (**permanente**; no uses `--temporary` para producción)
+3. Si cambias la URL pública, actualízala en los tres sitios y vuelve a desplegar:
    - `site` en [`astro.config.mjs`](astro.config.mjs)
    - `profile.siteUrl` en [`src/data/links.ts`](src/data/links.ts)
    - `Sitemap:` en [`public/robots.txt`](public/robots.txt)
-4. Vuelve a ejecutar `npm run deploy` para SEO/canonical correctos.
 
-### Deploy temporal (sin login)
+### Preview temporal (solo pruebas; no es producción)
 
 ```bash
 npm run build && npx wrangler deploy --temporary
 ```
 
-Obtienes una preview (~1 h) y un enlace **Claim** para asociarla a tu cuenta Cloudflare.
+La preview caduca (~1 h) salvo que la reclames. **No** uses esto como hosting permanente: el sitio desaparecerá.
 
 ### Dominio personalizado (más adelante)
 
 1. En el Worker `hub` → **Settings** → **Domains & Routes** → añade tu dominio.
-2. Sustituye el `*.workers.dev` por `https://tudominio.com` en los tres archivos del paso 3 y vuelve a desplegar.
+2. Sustituye el `*.workers.dev` por `https://tudominio.com` en los tres archivos del paso manual y vuelve a desplegar (o push a `main`).
 3. SSL/HSTS lo gestiona Cloudflare en el edge.
 
 ## Estructura
