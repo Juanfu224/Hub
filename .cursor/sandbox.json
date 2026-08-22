@@ -1,0 +1,14 @@
+{
+  "networkPolicy": {
+    "default": "deny",
+    "allow": [
+      "registry.npmjs.org",
+      "registry.yarnpkg.com"
+    ],
+    "deny": [
+      "169.254.169.254",
+      "metadata.google.internal",
+      "*.ngrok.io"
+    ]
+  }
+}

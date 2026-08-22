@@ -20,8 +20,21 @@ pnpm-debug.log*
 .env.*
 !.env.example
 *.pem
+id_rsa
+id_ed25519
+id_ecdsa
+id_rsa.pub
+credentials.json
 
 # OS / IDE
 .DS_Store
 .idea/
-.cursor/
+.cursor/*
+!.cursor/hooks.json
+!.cursor/sandbox.json
+
+# agent working memory
+.scratch/
+*.mcp.json
+__pycache__/
+*.pyc

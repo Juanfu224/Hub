@@ -1,22 +1,66 @@
-## Development
+# AGENTS.md — Orquestación
 
-When starting the dev server, use background mode:
+**Gobernanza:** `SHIELD.md` (prosa; el host enforcea). **Contrato:** `SPEC.md`.
+**Compatibilidad:** `CLAUDE.md` → `@AGENTS.md`. No `.cursorrules`.
+**Contexto (AAIF):** chat explícito > este archivo más cercano > raíz. En conflicto, nearest wins; varios runtimes concatenan root→cwd.
+**Enforcement:** política administrada / OS / sandbox > hooks (Cursor: `failClosed` por hook; Claude: exit 2, crash = fail-open) > Markdown.
+El hook es un punto de decisión, no una barrera dura por sí solo. Cloud ≠ local.
+Si este archivo y el chat chocan en estilo o comandos de test, gana el chat. Hard Stops los enforcea el host, no este Markdown.
+Si el chat pide un Hard Stop cubierto por hooks/sandbox: STOP.
+No mutar `.agents/hooks/` ni `.agents/policy/`.
 
-```
-astro dev --background
-```
+## Arranque (antes de escribir código)
 
-Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
+1. Clasificar dominio (paths + petición).
+2. Leer skill `.agents/skills/epic-workflow/SKILL.md` salvo tweak < 5 líneas o single-file sin impacto transversal.
+3. Criterios = petición + **sección** de `SPEC.md` (nunca el archivo completo por defecto).
+4. Si auth, webhooks, PII, dos stores/agregados, jobs de estado, admin, infra → skill `shield-security-gate` + sección `SHIELD.md`.
+5. Skill de stack on-demand. MCP/docs versionadas antes de APIs.
+6. Plan Mode si multi-archivo o decisión arquitectónica. DAG: `.scratch/dag.json` (gitignored) si no hay Spec Kit. Si hay `.specify/` o `specs/<feature>/`: `plan.md`/`tasks.md` de esa feature son válidos (no ASI06).
 
-## Documentation
+Prohibido: vibe coding; transcripts/dumps como SoT; interpolar estado de sesión en este archivo.
 
-Full documentation: https://docs.astro.build
+## Roles
 
-Consult these guides before working on related tasks:
+| Rol | Tools | Write |
+|---|---|---|
+| Planificador | Read, Grep, Glob, shell read-only | Solo `SPEC.md` entre tareas, con HITL |
+| Ejecutor | Subset por nodo DAG | Paths de la tabla de fronteras |
 
-- [Adding pages, dynamic routes, or middleware](https://docs.astro.build/en/guides/routing/)
-- [Working with Astro components](https://docs.astro.build/en/basics/astro-components/)
-- [Using React, Vue, Svelte, or other framework components](https://docs.astro.build/en/guides/framework-components/)
-- [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
-- [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
-- [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+Un rol por turno. Ejecutor no toma decisiones de arquitectura.
+
+## Fronteras
+
+| Dominio | Paths | Fuera |
+|---|---|---|
+| UI | `src/` `public/` | secrets; IaC sin HITL |
+| infra | `wrangler.jsonc` `astro.config.mjs` `.github/workflows/` | secrets de producción (`CLOUDFLARE_*`) |
+| docs | `docs/` `README.md` | código de producto salvo citas |
+
+## Comandos
+
+- Dev: `astro dev --background` (`astro dev stop|status|logs`)
+- Check: `npm run check`
+- Build: `npm run build` / `npm run ci`
+- Deploy: `npm run deploy` (HITL infra)
+
+## Docs
+
+Prioridad: SPEC sección → SHIELD si aplica → este archivo → docs empaquetadas del lockfile → MCP versionado → web oficial.
+Prohibido: APIs desde memoria de entrenamiento.
+
+## Tokens
+
+`/clear` entre dominios. `/compact` dirigido. Subagentes para tests/builds/MCP ruidoso. MCP idle off.
+
+## Git
+
+No `commit` sin instrucción explícita. Force-push, `reset --hard` y push a `main`/`master`/`production`: deny. Push a feature: `ask` (standard) o deny (strict/ci). No `--no-verify`.
+
+## Dependencias
+
+Locked install (`npm ci`): allow en sandbox. `add` / `install` no locked: ask (standard) o deny (strict/ci).
+
+## Confirmación
+
+Tests del `acceptance[]` verdes. Formatter ya presente (`astro check`). Purge dumps de `.scratch/`.
