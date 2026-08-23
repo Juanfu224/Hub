@@ -68,3 +68,23 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+
+      - name: Smoke production
+        env:
+          SITE_URL: https://hub.juanfu224.workers.dev
+        run: |
+          set -euo pipefail
+          html="$(mktemp)"
+          curl -fsS --retry 5 --retry-delay 2 --retry-all-errors --max-time 30 \
+            "$SITE_URL/" -o "$html"
+          grep -q 'bg-setup.webp' "$html"
+          grep -q 'theme-color" content="#f3f6fa"' "$html"
+          ! grep -q 'bg-poster' "$html"
+          curl -fsS --retry 5 --retry-delay 2 --retry-all-errors --max-time 30 \
+            -o /dev/null -w "%{http_code}" "$SITE_URL/bg-setup.webp" | grep -qx 200
+          css_path="$(grep -oE '/_astro/[^"]+\.css' "$html" | head -n1)"
+          test -n "$css_path"
+          curl -fsS --retry 5 --retry-delay 2 --retry-all-errors --max-time 30 \
+            "$SITE_URL$css_path" | grep -q 'bg-setup'
+          curl -fsS --retry 5 --retry-delay 2 --retry-all-errors --max-time 30 \
+            "$SITE_URL$css_path" | grep -q '#f3f6fa\|#0c1222'

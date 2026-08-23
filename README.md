@@ -40,11 +40,13 @@ Edita un solo archivo: [`src/data/links.ts`](src/data/links.ts).
 2. Ajusta el array `links` (etiqueta, URL, icono). `external` se deriva del esquema de la URL.
 3. Ajusta `presentation` si quieres cambiar qué va a la fila social vs las cards (y el orden).
 4. Mantén `profile.siteUrl` **igual** que `site` en [`astro.config.mjs`](astro.config.mjs) (canónico para SEO/OG).
-5. Sustituye `public/avatar.webp`, `public/bg-poster.webp` (y `.jpg` de respaldo), `public/og-image.png` y `public/favicon.svg` por tus assets.
+5. Sustituye `public/avatar.webp`, `public/bg-setup.webp` (y `.jpg` de respaldo), `public/og-image.png` y `public/favicon.svg` por tus assets.
 6. Actualiza la URL del sitemap en [`public/robots.txt`](public/robots.txt).
-7. Vuelve a desplegar con `npm run deploy`.
+7. Vuelve a desplegar con `npm run deploy` **o** push a `main` (CI).
 
 Esquemas de URL permitidos: `https:`, `mailto:`, `tel:`. Avatar debe ser ruta misma-origen (`/…`). Cualquier incumplimiento falla en build/arranque.
+
+Producción = lo publicado desde `main` vía CI (o `npm run deploy`). Si el job `deploy` falla por auth, regenera `CLOUDFLARE_API_TOKEN` en el repo; un token caducado deja la web en la última versión buena.
 
 ## Seguridad
 
@@ -71,7 +73,9 @@ Secrets del repo (Settings → Secrets and variables → Actions):
 | `CLOUDFLARE_API_TOKEN` | Token API con permiso **Edit Cloudflare Workers** (+ Account Read) |
 | `CLOUDFLARE_ACCOUNT_ID` | ID de cuenta Cloudflare |
 
-Crear el token: [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens) → plantilla **Edit Cloudflare Workers**.
+Crear el token: [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens) → plantilla **Edit Cloudflare Workers**. Si el deploy de Actions falla con `Invalid access token` / code `9109`, el secret está revocado o mal pegado: **rota el token** y vuelve a guardar `CLOUDFLARE_API_TOKEN`.
+
+Tras un deploy correcto, el job ejecuta un **smoke** HTTP contra `https://hub.juanfu224.workers.dev` (HTML con `bg-setup`, theme-color claro, asset `/bg-setup.webp`).
 
 Para redesplegar sin commit: Actions → **CI** → **Run workflow**.
 

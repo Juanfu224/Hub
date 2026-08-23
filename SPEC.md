@@ -1,6 +1,6 @@
 # SPEC.md — Hub
 
-**Versión:** 0.1 — 2026-08-22
+**Versión:** 0.2 — 2026-08-22
 **Estado:** Borrador
 
 > Contrato de dominio inmutable durante una tarea activa. El código se deriva de aquí, no al revés.
@@ -9,7 +9,7 @@
 ## 1. Visión y fuera de alcance
 
 ### Visión
-Sitio estático tipo “link in bio”: perfil público y enlaces a redes o contacto directo (`mailto`), sin backend.
+Sitio estático tipo “link in bio”: perfil público y enlaces a redes o contacto directo (`mailto`), sin backend. Presentación visual: **tema claro** sobre foto de habitación (`public/bg-setup.webp`).
 
 ### Objetivos funcionales
 1. Mostrar nombre, bio, avatar de misma origen y fila de enlaces sociales más cards de enlaces.
@@ -76,8 +76,8 @@ build     ← npm run build (Astro) → wrangler deploy / GHA
 ## 5. Flujos
 
 1. Render de portada: `index.astro` lee `profile` y `getCardLinks()` / `getSocialLinks()` → layout `BaseLayout` (canonical/OG desde `Astro.site` o `profile.siteUrl`) → HTML estático.
-2. Deploy producción: `npm run build` genera `dist/`; `wrangler deploy` o job GHA `deploy` en push a `main` / `workflow_dispatch` con `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` (HITL de infra si se cambia IaC/URL).
-3. Personalización de contenido: editar `src/data/links.ts` y assets en `public/`; mantener `profile.siteUrl` = `site` en `astro.config.mjs` = `Sitemap:` en `public/robots.txt`.
+2. Deploy producción: `npm run build` genera `dist/`; `wrangler deploy` o job GHA `deploy` en push a `main` / `workflow_dispatch` con `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` (HITL de infra si se cambia IaC/URL). Tras deploy, smoke HTTP: `/` incluye `bg-setup` y `theme-color` claro; `/bg-setup.webp` responde 200.
+3. Personalización de contenido: editar `src/data/links.ts` y assets en `public/` (fondo: `bg-setup.webp` / `.jpg`); mantener `profile.siteUrl` = `site` en `astro.config.mjs` = `Sitemap:` en `public/robots.txt`.
 
 ## 6. No funcionales detallados
 
@@ -97,6 +97,7 @@ Qué **debe fallar** si se rompe el contrato:
 | Build estático | `npm run build` |
 | Esquemas de URL / avatar / `siteUrl` | asserts en `src/data/links.ts` al importar (fallo de build/arranque) |
 | Auditoría deps (CI) | `npm audit --omit=dev --audit-level=high` |
+| Deploy + tema claro / fondo | GHA job `deploy` → smoke: HTML con `bg-setup` + `theme-color` `#f3f6fa`; `/bg-setup.webp` 200 |
 | Suite unitaria / e2e | N/A (no hay runner en `package.json`) |
 
 Cobertura mínima de transiciones de estado: N/A (no hay máquina de estados).

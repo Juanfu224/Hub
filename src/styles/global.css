@@ -52,15 +52,17 @@
 }
 
 .lt-page {
-  --lt-ink: #ffffff;
-  --lt-btn-bg: #000000;
+  --lt-ink: #0c1222;
+  --lt-ink-muted: #3d4a63;
+  --lt-btn-bg: #0c1222;
   --lt-btn-text: #ffffff;
-  --lt-btn-hover: color-mix(in srgb, var(--lt-btn-bg) 93%, #ffffff 7%);
+  --lt-btn-hover: color-mix(in srgb, var(--lt-btn-bg) 88%, #ffffff 12%);
   --lt-font: "Source Serif Pro", "Source Serif 4", Georgia, serif;
   --lt-gap: 14px;
-  /* Stronger tint for readable white text over bright poster areas */
-  --lt-tint: rgba(0, 0, 0, 0.42);
+  /* Soft light wash so dark ink stays readable over the room photo */
+  --lt-tint: rgb(243 246 250 / 0.58);
   --lt-max: 580px;
+  --lt-surface: #f3f6fa;
 
   position: relative;
   isolation: isolate;
@@ -68,7 +70,8 @@
   margin: 0;
   color: var(--lt-ink);
   font-family: var(--lt-font);
-  background-color: #0a0a0a;
+  background-color: var(--lt-surface);
+  color-scheme: light;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -78,10 +81,10 @@
   position: fixed;
   inset: 0;
   z-index: -2;
-  background-color: #0a0a0a;
+  background-color: var(--lt-surface);
   background-image: image-set(
-    url("/bg-poster.webp") type("image/webp"),
-    url("/bg-poster.jpg") type("image/jpeg")
+    url("/bg-setup.webp") type("image/webp"),
+    url("/bg-setup.jpg") type("image/jpeg")
   );
   background-position: center;
   background-size: cover;
@@ -141,7 +144,6 @@
   line-height: 1.5;
   color: var(--lt-ink);
   letter-spacing: 0;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 0.45);
 }
 
 .lt-bio {
@@ -151,8 +153,7 @@
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: var(--lt-ink);
-  text-shadow: 0 1px 2px rgb(0 0 0 / 0.45);
+  color: var(--lt-ink-muted);
 }
 
 .lt-socials {
@@ -171,7 +172,6 @@
   color: var(--lt-ink);
   text-decoration: none;
   transition: opacity 0.15s ease;
-  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.45));
 }
 
 .lt-social-icon,
@@ -345,9 +345,8 @@
   margin-top: 2rem;
   font-size: 0.75rem;
   line-height: 1.4;
-  color: rgb(255 255 255 / 0.7);
+  color: var(--lt-ink-muted);
   text-align: center;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 0.45);
 }
 
 .lt-footer p {
