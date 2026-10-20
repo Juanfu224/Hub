@@ -4,11 +4,11 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  // Keep in sync with profile.siteUrl and public/robots.txt.
+  // Canonical origin. robots.txt and OG URLs are generated from this value.
   site: 'https://hub.juanfu224.workers.dev',
   integrations: [sitemap()],
   markdown: {
-    // Avoid Shiki inline styles that conflict with CSP (no MD pages in this site).
+    // Avoid Shiki inline styles that conflict with CSP.
     syntaxHighlight: false,
   },
   security: {

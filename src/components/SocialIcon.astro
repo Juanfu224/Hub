@@ -1,0 +1,39 @@
+---
+import type { LinkIcon } from "../lib/icons";
+import { iconPaths } from "../lib/icons";
+
+interface Props {
+  icon: LinkIcon;
+  /** Visual size. Color comes from the parent via currentColor. */
+  size?: "social" | "card";
+}
+
+const { icon, size = "social" } = Astro.props;
+---
+
+<svg
+  class:list={["icon", size]}
+  viewBox="0 0 24 24"
+  fill="currentColor"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path d={iconPaths[icon]}></path>
+</svg>
+
+<style>
+  .icon {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .social {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .card {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+</style>

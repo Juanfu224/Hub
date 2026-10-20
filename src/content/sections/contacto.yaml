@@ -1,0 +1,12 @@
+order: 0
+variant: icons
+items:
+  - label: Email
+    url: mailto:juanfu224@gmail.com
+    icon: mail
+  - label: Telegram
+    url: https://t.me/juanfu224
+    icon: telegram
+  - label: LinkedIn
+    url: https://www.linkedin.com/in/juan-felipe-arias-aguirre/
+    icon: linkedin

@@ -1,0 +1,137 @@
+---
+import type { LinkIcon } from "../lib/icons";
+import { externalAttrs } from "../lib/url";
+import SocialIcon from "./SocialIcon.astro";
+
+interface Props {
+  href: string;
+  icon?: LinkIcon;
+}
+
+const { href, icon } = Astro.props;
+const attrs = externalAttrs(href);
+---
+
+<a
+  href={href}
+  class="lt-card"
+  target={attrs.target}
+  rel={attrs.rel}
+  referrerpolicy={attrs.referrerpolicy}
+>
+  {
+    icon && (
+      <span class="lt-card-icon" aria-hidden="true">
+        <SocialIcon icon={icon} size="card" />
+      </span>
+    )
+  }
+  <span class="lt-card-body">
+    <slot />
+  </span>
+  <span class="lt-card-arrow" aria-hidden="true">→</span>
+</a>
+
+<style>
+  .lt-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--lt-btn-border);
+    border-radius: 0.75rem;
+    background-color: var(--lt-btn-bg);
+    color: var(--lt-btn-text);
+    font-family: var(--lt-font);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    text-align: left;
+    text-decoration: none;
+    text-shadow: 0 1px 1px rgb(255 255 255 / 0.65);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+    box-shadow: none;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .lt-card:hover {
+    background-color: var(--lt-btn-bg-hover);
+    border-color: var(--lt-accent);
+    box-shadow: 0 10px 28px rgb(12 18 34 / 0.08);
+    transform: translateY(-2px);
+  }
+
+  .lt-card:active {
+    background-color: var(--lt-btn-bg-active);
+    transform: translateY(0);
+  }
+
+  .lt-card:focus-visible {
+    outline: 2px solid var(--lt-accent);
+    outline-offset: 3px;
+  }
+
+  .lt-card-icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    background-color: var(--lt-btn-icon-bg);
+    color: var(--lt-accent);
+    pointer-events: none;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .lt-card:hover .lt-card-icon {
+    background-color: var(--lt-accent);
+    color: #ffffff;
+  }
+
+  .lt-card-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .lt-card-arrow {
+    flex-shrink: 0;
+    color: var(--lt-ink-muted);
+    font-weight: 400;
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .lt-card:hover .lt-card-arrow {
+    color: var(--lt-accent);
+    transform: translateX(2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lt-card,
+    .lt-card-icon,
+    .lt-card-arrow {
+      transition: none;
+    }
+
+    .lt-card:hover,
+    .lt-card:hover .lt-card-arrow {
+      transform: none;
+    }
+  }
+</style>

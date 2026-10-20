@@ -7,7 +7,7 @@ Sitio estático tipo “link in bio”: muestra tu perfil y enlaces a redes o co
 - [Astro](https://astro.build) (HTML estático)
 - TypeScript estricto
 - CSS propio (sin Tailwind)
-- Fuente autoalojada Source Serif Pro (`@fontsource`, subsets latin / latin-ext)
+- Fuentes autoalojadas Bricolage Grotesque + Figtree (`@fontsource-variable`, subsets latin / latin-ext)
 - Pensado para [Cloudflare Workers](https://workers.cloudflare.com) (assets estáticos)
 
 ## Requisitos
@@ -34,17 +34,51 @@ npm run deploy   # build + wrangler deploy
 
 ## Personalizar contenido
 
-Edita un solo archivo: [`src/data/links.ts`](src/data/links.ts).
+El contenido editable vive en `src/content/`. El origen canónico (SEO, Open Graph y `robots.txt`) es solo `site` en [`astro.config.mjs`](astro.config.mjs).
 
-1. Cambia `profile` (`name`, `bio`, `avatar`, `email`, `siteUrl`).
-2. Ajusta el array `links` (etiqueta, URL, icono). `external` se deriva del esquema de la URL.
-3. Ajusta `presentation` si quieres cambiar qué va a la fila social vs las cards (y el orden).
-4. Mantén `profile.siteUrl` **igual** que `site` en [`astro.config.mjs`](astro.config.mjs) (canónico para SEO/OG).
-5. Sustituye `public/avatar.webp`, `public/bg-poster.webp` (y `.jpg` de respaldo), `public/og-image.png` y `public/favicon.svg` por tus assets.
-6. Actualiza la URL del sitemap en [`public/robots.txt`](public/robots.txt).
-7. Vuelve a desplegar con `npm run deploy`.
+1. Cambia el perfil en [`src/content/profile.yaml`](src/content/profile.yaml) (`name`, `bio`, `avatar`).
+2. Cada bloque de la home es un YAML en `src/content/sections/`. `order` fija la posición. `variant` elige la vista:
+   - `icons` — fila de iconos. Cada item lleva `label`, `url` e `icon`.
+   - `cards` — tarjetas con icono. Mismos campos.
+   - `projects` — tarjetas con título y resumen. Cada item lleva `label`, `summary` y `url`.
+3. El título visible es opcional (`title`). En `projects` hoy es «Mi trabajo».
+4. Un icono nuevo es una entrada en [`src/lib/icons.ts`](src/lib/icons.ts); el esquema solo acepta esas claves.
+5. Sustituye `public/avatar.webp`, `public/bg-setup.webp` (y `.jpg` de respaldo), `public/og-image.png` y `public/favicon.svg` por tus assets.
+6. Si cambia el dominio, actualiza `site` en [`astro.config.mjs`](astro.config.mjs) y vuelve a desplegar. `robots.txt` se genera en el build.
 
-Esquemas de URL permitidos: `https:`, `mailto:`, `tel:`. Avatar debe ser ruta misma-origen (`/…`). Cualquier incumplimiento falla en build/arranque.
+Esquemas de URL permitidos: `https:`, `mailto:`, `tel:`. Avatar debe ser ruta misma-origen (`/…`). Un `order` repetido entre secciones falla en el build. Un tipo de bloque nuevo (además de `icons`, `cards` y `projects`) sí necesita un componente.
+
+### Añadir un bloque en la home
+
+Crea, por ejemplo, `src/content/sections/charlas.yaml`:
+
+```yaml
+order: 3
+variant: cards
+title: Charlas
+items:
+  - label: Una charla
+    url: https://example.com/charla
+    icon: github
+```
+
+No hace falta tocar componentes: la home pinta las secciones ordenadas por `order`.
+
+### Añadir una página
+
+Crea un Markdown en `src/content/pages/`, por ejemplo `src/content/pages/proyectos.md`:
+
+```md
+---
+title: Proyectos
+description: Cosas en las que estoy trabajando.
+order: 0
+---
+
+Texto de la página.
+```
+
+La ruta será `/proyectos`. `order` es opcional; si falta, la navegación ordena por id. La home y esas páginas comparten columna, fondo y pie. La navegación entre secciones aparece solo cuando hay al menos una página de contenido.
 
 ## Seguridad
 
@@ -52,7 +86,7 @@ Esquemas de URL permitidos: `https:`, `mailto:`, `tel:`. Avatar debe ser ruta mi
 - **CSP** con hashes vía `security.csp` en Astro (meta). **No** duplicar `Content-Security-Policy` en `_headers` (doble política = más restrictiva y fácil de romper).
 - Cabeceras en [`public/_headers`](public/_headers): `nosniff`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options`, COOP/CORP y caché (`/_astro/*` inmutable).
 - Enlaces externos: `rel="noopener noreferrer"` + `referrerpolicy="no-referrer"`.
-- Iconos SVG vía máscaras CSS en clases estáticas (sin estilos inline ni CDN).
+- Iconos SVG inline desde `src/lib/icons.ts` (`currentColor`, sin CDN).
 - Sin analytics ni formularios en v1.
 - CI en GitHub Actions: `check`, `build` y `npm audit` (nivel high+).
 
@@ -64,11 +98,8 @@ El sitio se publica como Worker **assets-only** ([`wrangler.jsonc`](wrangler.jso
 
 1. Autentica Wrangler una vez: `npx wrangler login`
 2. Despliega: `npm run deploy`
-3. Copia la URL `*.workers.dev` y actualízala en los tres sitios:
-   - `site` en [`astro.config.mjs`](astro.config.mjs)
-   - `profile.siteUrl` en [`src/data/links.ts`](src/data/links.ts)
-   - `Sitemap:` en [`public/robots.txt`](public/robots.txt)
-4. Vuelve a ejecutar `npm run deploy` para SEO/canonical correctos.
+3. Copia la URL `*.workers.dev` y actualiza `site` en [`astro.config.mjs`](astro.config.mjs).
+4. Vuelve a ejecutar `npm run deploy` para SEO, canonical y `robots.txt` correctos.
 
 ### Deploy temporal (sin login)
 
@@ -81,25 +112,30 @@ Obtienes una preview (~1 h) y un enlace **Claim** para asociarla a tu cuenta Clo
 ### Dominio personalizado (más adelante)
 
 1. En el Worker `hub` → **Settings** → **Domains & Routes** → añade tu dominio.
-2. Sustituye el `*.workers.dev` por `https://tudominio.com` en los tres archivos del paso 3 y vuelve a desplegar.
+2. Sustituye el `*.workers.dev` por `https://tudominio.com` en `site` y vuelve a desplegar.
 3. SSL/HSTS lo gestiona Cloudflare en el edge.
 
 ## Estructura
 
 ```
 src/
-  data/links.ts            # perfil, enlaces y presentation
-  components/              # Profile, SocialRow, TornLink
+  content.config.ts        # colecciones profile, sections y pages
+  content/profile.yaml     # nombre, bio y avatar
+  content/sections/        # bloques de la home (icons, cards, projects)
+  content/pages/           # Markdown de páginas (vacío hasta que añadas una)
+  lib/icons.ts             # trazos SVG
+  lib/url.ts               # validación de URLs y atributos externos
+  lib/home.ts              # perfil, secciones ordenadas y páginas
+  components/              # SiteShell, Profile, Section, CardLink, SocialIcon
   layouts/BaseLayout.astro
   pages/index.astro
-  styles/global.css
+  pages/[slug].astro       # páginas de la colección
+  pages/robots.txt.ts      # generado desde site
+  styles/global.css        # tokens, fondo y shell
 public/
   _headers                 # cabeceras (sin CSP duplicada)
-  robots.txt
   avatar.webp
-  bg-poster.webp / .jpg
-  icons/                   # máscaras SVG
-  torn-top.svg / torn-bottom.svg
+  bg-setup.webp / .jpg     # fondo full-bleed
   og-image.png
   favicon.svg
 wrangler.jsonc             # Worker assets-only

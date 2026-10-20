@@ -1,0 +1,63 @@
+---
+import { getContentPages } from "../lib/home";
+
+const pages = await getContentPages();
+---
+
+<div class="lt-shell">
+  {
+    pages.length > 0 && (
+      <nav class="lt-site-nav" aria-label="Secciones">
+        <a href="/">Inicio</a>
+        {pages.map((page) => (
+          <a href={`/${page.id}`}>{page.data.title}</a>
+        ))}
+      </nav>
+    )
+  }
+  <slot />
+  <footer class="lt-footer">
+    <p>Enlaces directos, sin trackers</p>
+  </footer>
+</div>
+
+<style>
+  .lt-site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1rem;
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+
+  .lt-site-nav a {
+    color: var(--lt-ink-muted);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .lt-site-nav a:hover {
+    color: var(--lt-accent);
+  }
+
+  .lt-site-nav a:focus-visible {
+    outline: 2px solid var(--lt-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .lt-footer {
+    margin-top: 3rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--lt-ink-muted);
+    text-align: center;
+    text-shadow: 0 1px 2px rgb(255 255 255 / 0.55);
+  }
+
+  .lt-footer p {
+    margin: 0;
+  }
+</style>

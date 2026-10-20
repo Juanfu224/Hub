@@ -1,0 +1,55 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteShell from "../components/SiteShell.astro";
+
+export async function getStaticPaths() {
+  const pages = await getCollection("pages");
+  return pages.map((page) => ({
+    params: { slug: page.id },
+    props: { page },
+  }));
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+
+<BaseLayout title={page.data.title} description={page.data.description}>
+  <SiteShell>
+    <article class="lt-prose">
+      <h1>{page.data.title}</h1>
+      <Content />
+    </article>
+  </SiteShell>
+</BaseLayout>
+
+<style>
+  .lt-prose {
+    flex: 1;
+    width: 100%;
+    color: var(--lt-ink);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  .lt-prose :global(h1) {
+    margin: 0 0 1rem;
+    font-family: var(--lt-font-display);
+    font-size: clamp(2rem, 4vw + 1rem, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    text-shadow: 0 1px 2px rgb(255 255 255 / 0.65);
+  }
+
+  .lt-prose :global(p) {
+    margin: 0 0 1rem;
+    color: var(--lt-ink-muted);
+    text-shadow: 0 1px 2px rgb(255 255 255 / 0.55);
+  }
+
+  .lt-prose :global(a) {
+    color: var(--lt-accent);
+  }
+</style>

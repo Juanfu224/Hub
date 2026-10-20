@@ -1,0 +1,12 @@
+order: 1
+variant: cards
+items:
+  - label: GitHub
+    url: https://github.com/Juanfu224
+    icon: github
+  - label: Instagram
+    url: https://www.instagram.com/juanfu224/
+    icon: instagram
+  - label: Spotify
+    url: https://open.spotify.com/user/31qd34klahkpv4qlae4qv654fcwi
+    icon: spotify

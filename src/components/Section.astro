@@ -1,0 +1,161 @@
+---
+import type { CollectionEntry } from "astro:content";
+import CardLink from "./CardLink.astro";
+import SocialIcon from "./SocialIcon.astro";
+import { externalAttrs } from "../lib/url";
+
+interface Props {
+  section: CollectionEntry<"sections">;
+}
+
+const { section } = Astro.props;
+const data = section.data;
+const headingId = `${section.id}-heading`;
+const Tag = data.variant === "projects" ? "section" : data.variant === "cards" ? "nav" : "div";
+const fallback =
+  data.variant === "icons" ? "Contacto" : data.variant === "cards" ? "Enlaces" : "Proyectos";
+---
+
+<Tag
+  class:list={["lt-section", data.variant]}
+  aria-labelledby={data.title && data.variant !== "icons" ? headingId : undefined}
+  aria-label={data.title || data.variant === "icons" ? undefined : fallback}
+>
+  {data.title && data.variant !== "icons" && <h2 id={headingId}>{data.title}</h2>}
+  {
+    data.variant === "icons" ? (
+      <ul class="lt-socials" aria-label={data.title ?? fallback}>
+        {data.items.map((item) => {
+          const attrs = externalAttrs(item.url);
+          return (
+            <li>
+              <a
+                href={item.url}
+                aria-label={item.label}
+                target={attrs.target}
+                rel={attrs.rel}
+                referrerpolicy={attrs.referrerpolicy}
+              >
+                <SocialIcon icon={item.icon} size="social" />
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    ) : (
+      <ul>
+        {data.items.map((item) => (
+          <li>
+            <CardLink href={item.url} icon={data.variant === "cards" ? item.icon : undefined}>
+              {data.variant === "projects" ? (
+                <span class="lt-work-copy">
+                  <span class="lt-work-title">{item.label}</span>
+                  <span class="lt-work-summary">{item.summary}</span>
+                </span>
+              ) : (
+                <span class="lt-link-label">{item.label}</span>
+              )}
+            </CardLink>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Tag>
+
+<style>
+  .lt-section {
+    width: 100%;
+  }
+
+  .lt-section h2 {
+    margin: 0 0 0.75rem;
+    font-family: var(--lt-font);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--lt-ink-muted);
+    text-shadow: 0 1px 2px rgb(255 255 255 / 0.55);
+  }
+
+  .lt-socials {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .lt-socials a {
+    display: inline-flex;
+    color: var(--lt-ink);
+    text-decoration: none;
+    filter: drop-shadow(0 1px 2px rgb(255 255 255 / 0.7));
+    transition:
+      color 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .lt-socials a:hover {
+    color: var(--lt-accent);
+  }
+
+  .lt-socials a:focus-visible {
+    outline: 2px solid var(--lt-accent);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  .cards ul,
+  .projects ul {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: var(--lt-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .lt-link-label {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    text-align: left;
+    text-wrap: balance;
+  }
+
+  .lt-work-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  .lt-work-title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .lt-work-summary {
+    color: var(--lt-ink-muted);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.35;
+    letter-spacing: normal;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lt-socials a {
+      transition: none;
+    }
+  }
+</style>

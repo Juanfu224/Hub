@@ -1,0 +1,16 @@
+order: 2
+variant: projects
+title: Mi trabajo
+items:
+  - label: The Good Barber
+    summary: Reservas online para la barbería en Jerez.
+    url: https://thegoodbarber.es/
+  - label: Auto Kitty Workspace
+    summary: Instala y configura Kitty con el tema Catppuccin.
+    url: https://github.com/Juanfu224/Auto-Kitty-Workspace
+  - label: Gobernanza agéntica
+    summary: Pack portable de arquitectura y gobernanza para agentes.
+    url: https://github.com/Juanfu224/gobernanza-agentica-arquetipo
+  - label: CV Toolkit
+    summary: Adapta un CV a cada oferta sin inventar experiencia.
+    url: https://github.com/Juanfu224/cv-toolkit

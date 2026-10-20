@@ -1,17 +1,22 @@
 ---
 import "../styles/global.css";
-import { profile } from "../data/links";
+import { getProfile } from "../lib/home";
 
 interface Props {
   title?: string;
   description?: string;
 }
 
+const profile = (await getProfile()).data;
 const title = Astro.props.title ?? `${profile.name} — Enlaces y contacto`;
 const description = Astro.props.description ?? profile.bio;
-const siteOrigin = (Astro.site ?? new URL(profile.siteUrl)).origin;
-const canonical = siteOrigin;
-const ogImage = `${siteOrigin}/og-image.png`;
+
+if (!Astro.site) {
+  throw new Error("[site] Define `site` in astro.config.mjs (canonical origin).");
+}
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL("/og-image.png", Astro.site).href;
 ---
 
 <!doctype html>
@@ -20,11 +25,11 @@ const ogImage = `${siteOrigin}/og-image.png`;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="theme-color" content="#0f766e" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="preload" as="image" href="/bg-poster.webp" type="image/webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/bg-setup.webp" type="image/webp" fetchpriority="high" />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_ES" />
@@ -42,6 +47,10 @@ const ogImage = `${siteOrigin}/og-image.png`;
     <title>{title}</title>
   </head>
   <body class="lt-page">
+    <div class="lt-bg" aria-hidden="true">
+      <div class="lt-bg__ambient"></div>
+      <div class="lt-bg__photo"></div>
+    </div>
     <slot />
   </body>
 </html>
