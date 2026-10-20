@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -38,3 +39,52 @@ jobs:
 
       - name: Audit dependencies
         run: npm audit --omit=dev --audit-level=high
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Smoke production
+        env:
+          SITE_URL: https://hub.juanfu224.workers.dev
+        run: |
+          set -euo pipefail
+          html="$(mktemp)"
+          curl -fsS --retry 5 --retry-delay 2 --retry-all-errors --max-time 30 \
+            "$SITE_URL/" -o "$html"
+          grep -q 'bg-setup.webp' "$html"
+          grep -q 'theme-color" content="#f3f6fa"' "$html"
+          ! grep -q 'bg-poster' "$html"
+          curl -fsS --retry 5 --retry-delay 2 --retry-all-errors --max-time 30 \
+            -o /dev/null -w "%{http_code}" "$SITE_URL/bg-setup.webp" | grep -qx 200
+          css_path="$(grep -oE '/_astro/[^"]+\.css' "$html" | head -n1)"
+          test -n "$css_path"
+          curl -fsS --retry 5 --retry-delay 2 --retry-all-errors --max-time 30 \
+            "$SITE_URL$css_path" | grep -q 'bg-setup'
+          curl -fsS --retry 5 --retry-delay 2 --retry-all-errors --max-time 30 \
+            "$SITE_URL$css_path" | grep -q '#f3f6fa\|#0c1222'
